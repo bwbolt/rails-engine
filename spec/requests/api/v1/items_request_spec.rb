@@ -112,5 +112,26 @@ RSpec.describe 'Items API' do
   end
 
   describe 'sad path' do
+    it 'returns error if attribute is missing from create' do
+      merchant_id = create(:merchant).id
+      create(:item, merchant_id: merchant_id)
+
+      item_params = {
+        name: 'Spoon',
+        description: "It's a spoon",
+        merchant_id: merchant_id
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(response).to_not be_successful
+
+      new_item = Item.last
+
+      expect(new_item.name).to_not eq(item_params[:name])
+      expect(new_item.description).to_not eq(item_params[:description])
+    end
   end
 end
