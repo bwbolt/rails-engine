@@ -159,26 +159,26 @@ RSpec.describe 'Items API' do
       expect(Item.exists?(item2.id)).to eq(true)
     end
 
-    # it 'destroys a invoice if last item is destroyed' do
-    #   merchant_id = create(:merchant).id
-    #   item1 = create(:item, merchant_id: merchant_id)
-    #   item2 = create(:item, merchant_id: merchant_id)
-    #
-    #   customer = Customer.create!(first_name: 'Bryce', last_name: 'Wein')
-    #
-    #   invoice = Invoice.create!(merchant_id: merchant_id, customer_id: customer.id)
-    #
-    #   invoice_item1 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice.id)
-    #   invoice_item2 = InvoiceItem.create!(item_id: item2.id, invoice_id: invoice.id)
-    #
-    #   delete "/api/v1/items/#{item1.id}"
-    #   delete "/api/v1/items/#{item2.id}"
-    #
-    #   expect(Item.exists?(item1.id)).to eq(false)
-    #   expect(Item.exists?(item2.id)).to eq(false)
-    #
-    #   expect(Invoice.exists?(invoice.id)).to eq(false)
-    # end
+    it 'destroys a invoice if last item is destroyed' do
+      merchant_id = create(:merchant).id
+      item1 = create(:item, merchant_id: merchant_id)
+      item2 = create(:item, merchant_id: merchant_id)
+
+      customer = Customer.create!(first_name: 'Bryce', last_name: 'Wein')
+
+      invoice = Invoice.create!(merchant_id: merchant_id, customer_id: customer.id)
+
+      invoice_item1 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice.id)
+      invoice_item2 = InvoiceItem.create!(item_id: item2.id, invoice_id: invoice.id)
+
+      delete "/api/v1/items/#{item1.id}"
+      delete "/api/v1/items/#{item2.id}"
+
+      expect(Item.exists?(item1.id)).to eq(false)
+      expect(Item.exists?(item2.id)).to eq(false)
+
+      expect(Invoice.exists?(invoice.id)).to eq(false)
+    end
   end
 
   describe 'sad path' do
