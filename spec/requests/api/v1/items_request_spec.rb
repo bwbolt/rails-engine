@@ -178,6 +178,9 @@ RSpec.describe 'Items API' do
       expect(Item.exists?(item2.id)).to eq(false)
 
       expect(Invoice.exists?(invoice.id)).to eq(false)
+
+      expect(response).to be_successful
+      expect(response[:body]).to eq(nil)
     end
   end
 

@@ -32,7 +32,7 @@ class Api::V1::ItemsController < ApplicationController
 
   def destroy
     if Item.exists?(params[:id])
-      render json: Item.destroy(params[:id])
+      Item.destroy(params[:id])
     else
       render status: 404
     end
