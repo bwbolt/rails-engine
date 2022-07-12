@@ -140,6 +140,48 @@ RSpec.describe 'Items API' do
       expect(updated_item.unit_price).to eq(new_item.unit_price)
       expect(updated_item.merchant_id).to eq(new_item.merchant_id)
     end
+
+    it 'destroys a single item' do
+      merchant_id = create(:merchant).id
+      item1 = create(:item, merchant_id: merchant_id)
+      item2 = create(:item, merchant_id: merchant_id)
+
+      customer = Customer.create!(first_name: 'Bryce', last_name: 'Wein')
+
+      invoice = Invoice.create!(merchant_id: merchant_id, customer_id: customer.id)
+
+      invoice_item1 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice.id)
+      invoice_item2 = InvoiceItem.create!(item_id: item2.id, invoice_id: invoice.id)
+
+      delete "/api/v1/items/#{item1.id}"
+
+      expect(Item.exists?(item1.id)).to eq(false)
+      expect(Item.exists?(item2.id)).to eq(true)
+    end
+
+    it 'destroys a invoice if last item is destroyed' do
+      merchant_id = create(:merchant).id
+      item1 = create(:item, merchant_id: merchant_id)
+      item2 = create(:item, merchant_id: merchant_id)
+
+      customer = Customer.create!(first_name: 'Bryce', last_name: 'Wein')
+
+      invoice = Invoice.create!(merchant_id: merchant_id, customer_id: customer.id)
+
+      invoice_item1 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice.id)
+      invoice_item2 = InvoiceItem.create!(item_id: item2.id, invoice_id: invoice.id)
+
+      delete "/api/v1/items/#{item1.id}"
+      delete "/api/v1/items/#{item2.id}"
+
+      expect(Item.exists?(item1.id)).to eq(false)
+      expect(Item.exists?(item2.id)).to eq(false)
+
+      expect(Invoice.exists?(invoice.id)).to eq(false)
+
+      expect(response).to be_successful
+      expect(response[:body]).to eq(nil)
+    end
   end
 
   describe 'sad path' do
@@ -190,6 +232,21 @@ RSpec.describe 'Items API' do
       expect(response).to_not be_successful
 
       expect(item.description).to eq(item_params[:description])
+    end
+
+    it 'returns error if trying to destroy item that does not exist' do
+      merchant_id = create(:merchant).id
+      item1 = create(:item, merchant_id: merchant_id)
+
+      customer = Customer.create!(first_name: 'Bryce', last_name: 'Wein')
+
+      invoice = Invoice.create!(merchant_id: merchant_id, customer_id: customer.id)
+
+      invoice_item1 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice.id)
+
+      delete '/api/v1/items/4'
+
+      expect(response).to_not be_successful
     end
   end
 end
