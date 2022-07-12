@@ -17,6 +17,8 @@ RSpec.describe 'Merchant Items API' do
 
       items = parsed_body[:data]
 
+      expect(items.count).to eq(3)
+
       items.each do |item|
         expect(item).to have_key :id
         expect(item[:id]).to be_a String
