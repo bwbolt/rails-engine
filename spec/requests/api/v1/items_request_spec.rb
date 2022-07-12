@@ -85,5 +85,32 @@ RSpec.describe 'Items API' do
       expect(item).to_not have_key :created_at
       expect(item).to_not have_key :updated_at
     end
+
+    it 'creates a single item' do
+      merchant_id = create(:merchant).id
+
+      item_params = {
+        name: 'Spoon',
+        description: "It's a spoon",
+        unit_price: 1.1,
+        merchant_id: merchant_id
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(response).to be_successful
+
+      new_item = Item.last
+
+      expect(new_item.name).to eq(item_params[:name])
+      expect(new_item.description).to eq(item_params[:description])
+      expect(new_item.unit_price).to eq(item_params[:unit_price])
+      expect(new_item.merchant_id).to eq(item_params[:merchant_id])
+    end
+  end
+
+  describe 'sad path' do
   end
 end
