@@ -233,5 +233,20 @@ RSpec.describe 'Items API' do
 
       expect(item.description).to eq(item_params[:description])
     end
+
+    it 'returns error if trying to destroy item that does not exist' do
+      merchant_id = create(:merchant).id
+      item1 = create(:item, merchant_id: merchant_id)
+
+      customer = Customer.create!(first_name: 'Bryce', last_name: 'Wein')
+
+      invoice = Invoice.create!(merchant_id: merchant_id, customer_id: customer.id)
+
+      invoice_item1 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice.id)
+
+      delete '/api/v1/items/4'
+
+      expect(response).to_not be_successful
+    end
   end
 end
