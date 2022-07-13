@@ -16,5 +16,14 @@ RSpec.describe Merchant, type: :model do
 
       expect(name).to eq(merchant2.name)
     end
+    it '#find_by_name (not found)' do
+      merchant1 = Merchant.create!(name: 'Frank')
+      merchant2 = Merchant.create!(name: 'Frankfurt')
+      merchant3 = Merchant.create!(name: 'Frankfurtnoodle')
+
+      merchant = Merchant.find_by_name('q')
+
+      expect(merchant).to eq({ data: {} })
+    end
   end
 end
