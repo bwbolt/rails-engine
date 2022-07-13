@@ -188,11 +188,11 @@ RSpec.describe 'Items API' do
 
       item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
       item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
-      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat happy', unit_price: 8.00,
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
                            merchant_id: merchant_id)
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
-      get '/api/v1/items/find_all', headers: headers, params: JSON.generate(name: 'the')
+      get '/api/v1/items/find_all', headers: headers, params: { name: 'the' }
 
       expect(response).to be_successful
 
@@ -203,7 +203,7 @@ RSpec.describe 'Items API' do
 
       items = parsed_body[:data]
 
-      expect(items.length).to eq(2)
+      expect(items.length).to eq(3)
 
       items.each do |item|
         expect(item).to have_key :id

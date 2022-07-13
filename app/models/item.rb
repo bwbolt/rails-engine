@@ -9,6 +9,11 @@ class Item < ApplicationRecord
   validates_presence_of :description
   validates_presence_of :unit_price
 
+  def self.find_all_name(search)
+    a = Item.where('name ILIKE ?', "%#{search}%").or(where('description ILIKE ?', "%#{search}%"))
+    # binding.pry
+  end
+
   private
 
   def destroy_empty_invoices
