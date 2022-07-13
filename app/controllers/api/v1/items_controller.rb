@@ -38,6 +38,26 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
+  def find_all
+    if params[:name] && params[:min_price] && params[:max_price]
+      render status: 404
+    elsif params[:name]
+      if params[:name] == ''
+        render status: 400
+      else
+        render json: ItemSerializer.new(Item.find_all_name(params[:name]))
+      end
+    elsif params[:min_price] && params[:max_price]
+      render json: ItemSerializer.new(Item.find_all_range(params[:min_price], params[:max_price]))
+    elsif params[:min_price]
+      render json: ItemSerializer.new(Item.find_all_min_price(params[:min_price]))
+    elsif params[:max_price]
+      render json: ItemSerializer.new(Item.find_all_max_price(params[:max_price]))
+    else
+      render status: 400
+    end
+  end
+
   private
 
   def item_params
