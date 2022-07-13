@@ -6,7 +6,6 @@ class Merchant < ApplicationRecord
     if merchant.nil?
       { data: {} }
     else
-
       MerchantSerializer.new(merchant)
     end
   end
