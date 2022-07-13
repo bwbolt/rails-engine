@@ -183,7 +183,7 @@ RSpec.describe 'Items API' do
       expect(response[:body]).to eq(nil)
     end
 
-    it 'can find all items within certain perameters' do
+    it 'can find all like items by searched name' do
       merchant_id = create(:merchant).id
 
       item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
@@ -203,7 +203,148 @@ RSpec.describe 'Items API' do
 
       items = parsed_body[:data]
 
-      expect(items.length).to eq(3)
+      expect(items.length).to eq(2)
+
+      items.each do |item|
+        expect(item).to have_key :id
+        expect(item[:id]).to be_a String
+
+        expect(item).to have_key :type
+        expect(item[:type]).to eq('item')
+
+        expect(item).to have_key :attributes
+
+        expect(item[:attributes]).to have_key :name
+        expect(item[:attributes][:name]).to be_a String
+
+        expect(item[:attributes]).to have_key :description
+        expect(item[:attributes][:description]).to be_a String
+
+        expect(item[:attributes]).to have_key :unit_price
+        expect(item[:attributes][:unit_price]).to be_a Float
+
+        expect(item[:attributes]).to have_key :merchant_id
+        expect(item[:attributes][:merchant_id]).to be_a Integer
+
+        expect(item).to_not have_key :created_at
+        expect(item).to_not have_key :updated_at
+      end
+    end
+    it 'can find all items by price range' do
+      merchant_id = create(:merchant).id
+
+      item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
+      item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
+                           merchant_id: merchant_id)
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/items/find_all', headers: headers, params: { min_price: 7, max_price: 10 }
+
+      expect(response).to be_successful
+
+      parsed_body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(parsed_body).to have_key(:data)
+      expect(parsed_body[:data]).to be_a Array
+
+      items = parsed_body[:data]
+
+      expect(items.length).to eq(2)
+
+      items.each do |item|
+        expect(item).to have_key :id
+        expect(item[:id]).to be_a String
+
+        expect(item).to have_key :type
+        expect(item[:type]).to eq('item')
+
+        expect(item).to have_key :attributes
+
+        expect(item[:attributes]).to have_key :name
+        expect(item[:attributes][:name]).to be_a String
+
+        expect(item[:attributes]).to have_key :description
+        expect(item[:attributes][:description]).to be_a String
+
+        expect(item[:attributes]).to have_key :unit_price
+        expect(item[:attributes][:unit_price]).to be_a Float
+
+        expect(item[:attributes]).to have_key :merchant_id
+        expect(item[:attributes][:merchant_id]).to be_a Integer
+
+        expect(item).to_not have_key :created_at
+        expect(item).to_not have_key :updated_at
+      end
+    end
+    it 'can find all items by min price' do
+      merchant_id = create(:merchant).id
+
+      item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
+      item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
+                           merchant_id: merchant_id)
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/items/find_all', headers: headers, params: { min_price: 10 }
+
+      expect(response).to be_successful
+
+      parsed_body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(parsed_body).to have_key(:data)
+      expect(parsed_body[:data]).to be_a Array
+
+      items = parsed_body[:data]
+
+      expect(items.length).to eq(1)
+
+      items.each do |item|
+        expect(item).to have_key :id
+        expect(item[:id]).to be_a String
+
+        expect(item).to have_key :type
+        expect(item[:type]).to eq('item')
+
+        expect(item).to have_key :attributes
+
+        expect(item[:attributes]).to have_key :name
+        expect(item[:attributes][:name]).to be_a String
+
+        expect(item[:attributes]).to have_key :description
+        expect(item[:attributes][:description]).to be_a String
+
+        expect(item[:attributes]).to have_key :unit_price
+        expect(item[:attributes][:unit_price]).to be_a Float
+
+        expect(item[:attributes]).to have_key :merchant_id
+        expect(item[:attributes][:merchant_id]).to be_a Integer
+
+        expect(item).to_not have_key :created_at
+        expect(item).to_not have_key :updated_at
+      end
+    end
+    it 'can find all items by max price' do
+      merchant_id = create(:merchant).id
+
+      item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
+      item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
+                           merchant_id: merchant_id)
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/items/find_all', headers: headers, params: { max_price: 8.50 }
+
+      expect(response).to be_successful
+
+      parsed_body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(parsed_body).to have_key(:data)
+      expect(parsed_body[:data]).to be_a Array
+
+      items = parsed_body[:data]
+
+      expect(items.length).to eq(1)
 
       items.each do |item|
         expect(item).to have_key :id

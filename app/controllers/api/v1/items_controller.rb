@@ -49,7 +49,8 @@ class Api::V1::ItemsController < ApplicationController
       render json: ItemSerializer.new(Item.find_all_min_price(params[:min_price]))
     elsif params[:max_price]
       render json: ItemSerializer.new(Item.find_all_max_price(params[:max_price]))
-
+    else
+      render status: 400
     end
   end
 
