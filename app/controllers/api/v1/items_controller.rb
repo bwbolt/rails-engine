@@ -42,7 +42,11 @@ class Api::V1::ItemsController < ApplicationController
     if params[:name] && params[:min_price] && params[:max_price]
       render status: 404
     elsif params[:name]
-      render json: ItemSerializer.new(Item.find_all_name(params[:name]))
+      if params[:name] == ''
+        render status: 400
+      else
+        render json: ItemSerializer.new(Item.find_all_name(params[:name]))
+      end
     elsif params[:min_price] && params[:max_price]
       render json: ItemSerializer.new(Item.find_all_range(params[:min_price], params[:max_price]))
     elsif params[:min_price]

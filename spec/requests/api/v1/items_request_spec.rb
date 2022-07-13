@@ -437,5 +437,19 @@ RSpec.describe 'Items API' do
 
       expect(response).to_not be_successful
     end
+
+    it 'can will return error if name search is empty' do
+      merchant_id = create(:merchant).id
+
+      item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
+      item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
+                           merchant_id: merchant_id)
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/items/find_all', headers: headers, params: { name: '' }
+
+      expect(response).to_not be_successful
+    end
   end
 end
