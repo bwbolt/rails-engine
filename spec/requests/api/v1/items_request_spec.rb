@@ -463,7 +463,7 @@ RSpec.describe 'Items API' do
                           })
 
       new_item_params = {
-        description: "It's a spoon and a fork!"
+        merchant_id: 32_523_452_345
       }
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
