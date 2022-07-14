@@ -438,7 +438,7 @@ RSpec.describe 'Items API' do
       expect(response).to_not be_successful
     end
 
-    it 'can will return error if name search is empty' do
+    it 'will return error if name search is empty' do
       merchant_id = create(:merchant).id
 
       item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
@@ -448,6 +448,89 @@ RSpec.describe 'Items API' do
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
       get '/api/v1/items/find_all', headers: headers, params: { name: '' }
+
+      expect(response).to_not be_successful
+    end
+
+    it 'throws error if updating a single item fails' do
+      merchant_id = create(:merchant).id
+
+      item = Item.create!({
+                            name: 'Spoon',
+                            description: "It's a spoon",
+                            unit_price: 1.1,
+                            merchant_id: merchant_id
+                          })
+
+      new_item_params = {
+        merchant_id: 32_523_452_345
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: new_item_params)
+
+      updated_item = Item.last
+
+      expect(response).to_not be_successful
+
+      expect(updated_item.description).to eq(item.description)
+
+      expect(updated_item.name).to eq(item.name)
+      expect(updated_item.unit_price).to eq(item.unit_price)
+      expect(updated_item.merchant_id).to eq(item.merchant_id)
+    end
+
+    it 'throws error if updating a single item that doesnt exist' do
+      merchant_id = create(:merchant).id
+
+      item = Item.create!({
+                            name: 'Spoon',
+                            description: "It's a spoon",
+                            unit_price: 1.1,
+                            merchant_id: merchant_id
+                          })
+
+      new_item_params = {
+        merchant_id: 32_523_452_345
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch '/api/v1/items/33', headers: headers, params: JSON.generate(item: new_item_params)
+
+      updated_item = Item.last
+
+      expect(response).to_not be_successful
+
+      expect(updated_item.description).to eq(item.description)
+
+      expect(updated_item.name).to eq(item.name)
+      expect(updated_item.unit_price).to eq(item.unit_price)
+      expect(updated_item.merchant_id).to eq(item.merchant_id)
+    end
+
+    it 'will return error if name/min_price/max_price all at once' do
+      merchant_id = create(:merchant).id
+
+      item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
+      item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
+                           merchant_id: merchant_id)
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/items/find_all', headers: headers, params: { name: 'hey', min_price: 1, max_price: 2 }
+
+      expect(response).to_not be_successful
+    end
+    it 'will return error if no search params at all' do
+      merchant_id = create(:merchant).id
+
+      item1 = Item.create!(name: 'The swing', description: 'Its the swing', unit_price: 10.01, merchant_id: merchant_id)
+      item2 = Item.create!(name: 'The Tire', description: 'It rolls!', unit_price: 9.00, merchant_id: merchant_id)
+      item3 = Item.create!(name: 'Cat Toy', description: 'Make your cat the happiest', unit_price: 8.00,
+                           merchant_id: merchant_id)
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/items/find_all', headers: headers, params: {}
 
       expect(response).to_not be_successful
     end

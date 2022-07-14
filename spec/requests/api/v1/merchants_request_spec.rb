@@ -97,20 +97,29 @@ RSpec.describe 'Merchants API' do
   end
 
   describe 'sad path' do
-    it 'it will return an error if no match' do
+    it 'it will return an error if params not met' do
       merchant1 = Merchant.create!(name: 'Frank')
       merchant2 = Merchant.create!(name: 'Frankfurt')
       merchant3 = Merchant.create!(name: 'Frankfurtnoodle')
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
-      get '/api/v1/merchants/find', headers: headers, params: { name: 'hello' }
+      get '/api/v1/merchants/find', headers: headers, params: { name: '' }
+
+      expect(response).to_not be_successful
+    end
+    it 'it will return an empty hash of data if no match' do
+      merchant1 = Merchant.create!(name: 'Frank')
+      merchant2 = Merchant.create!(name: 'Frankfurt')
+      merchant3 = Merchant.create!(name: 'Frankfurtnoodle')
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      get '/api/v1/merchants/find', headers: headers, params: { name: 'hey' }
 
       expect(response).to be_successful
 
       parsed_body = JSON.parse(response.body, symbolize_names: true)
 
-      expect(parsed_body).to have_key(:data)
-      expect(parsed_body[:data]).to be_a Hash
+      expect(parsed_body).to eq({ data: {} })
     end
   end
 end
