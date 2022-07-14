@@ -467,9 +467,39 @@ RSpec.describe 'Items API' do
       }
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
-      patch '/api/v1/items/22', headers: headers, params: JSON.generate(item: new_item_params)
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: new_item_params)
 
       updated_item = Item.last
+
+      expect(response).to_not be_successful
+
+      expect(updated_item.description).to eq(item.description)
+
+      expect(updated_item.name).to eq(item.name)
+      expect(updated_item.unit_price).to eq(item.unit_price)
+      expect(updated_item.merchant_id).to eq(item.merchant_id)
+    end
+
+    it 'throws error if updating a single item that doesnt exist' do
+      merchant_id = create(:merchant).id
+
+      item = Item.create!({
+                            name: 'Spoon',
+                            description: "It's a spoon",
+                            unit_price: 1.1,
+                            merchant_id: merchant_id
+                          })
+
+      new_item_params = {
+        merchant_id: 32_523_452_345
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch '/api/v1/items/33', headers: headers, params: JSON.generate(item: new_item_params)
+
+      updated_item = Item.last
+
+      expect(response).to_not be_successful
 
       expect(updated_item.description).to eq(item.description)
 
