@@ -97,6 +97,14 @@ RSpec.describe 'Merchants API' do
   end
 
   describe 'sad path' do
+    it 'returns error if single merchant does not exist' do
+      merchant_id = create(:merchant).id
+
+      get '/api/v1/merchants/20'
+
+      expect(response).to_not be_successful
+    end
+
     it 'it will return an error if params not met' do
       merchant1 = Merchant.create!(name: 'Frank')
       merchant2 = Merchant.create!(name: 'Frankfurt')
