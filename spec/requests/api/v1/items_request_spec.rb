@@ -396,7 +396,7 @@ RSpec.describe 'Items API' do
       expect(new_item.description).to_not eq(item_params[:description])
     end
 
-    it 'returns an error if item does not exist' do
+    it 'returns an error if updating an item that does not exist' do
       merchant_id = create(:merchant).id
 
       item_params = {
@@ -531,6 +531,15 @@ RSpec.describe 'Items API' do
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
       get '/api/v1/items/find_all', headers: headers, params: {}
+
+      expect(response).to_not be_successful
+    end
+    it 'returns error if looking for item that does not exist' do
+      id_1 = create(:merchant).id
+
+      item_id = create(:item, merchant_id: id_1).id
+
+      get "/api/v1/items/#{item_id + 1}"
 
       expect(response).to_not be_successful
     end
